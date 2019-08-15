@@ -105,3 +105,37 @@ stages:
               resourceGroupName: $(rg)
               slotName: UAT
               imageName: '$(azureCR)/$(repo):latest'
+
+- stage: DeployNearlyProd
+  displayName: Deploy to nearlyprod slot
+  dependsOn: DeployUAT
+  jobs:
+  - deployment: DeployAzureFunction
+    displayName: deploy Azure function
+    pool:
+      vmImage: $(vm)'
+    environment: 'azurefunc-env-nearlyprod'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureFunctionAppContainer@1
+            displayName: 'Azure Function App on Container Deploy: hellworldfunc'
+            inputs:
+              azureSubscription: 'Visual Studio Enterprise with MSDN (92800e22-a5bd-44b1-a59a-2defd15e82d1)'
+              appName: $(funcname)
+              deployToSlotOrASE: true
+              resourceGroupName: $(rg)
+              slotName: nearlyprod
+              imageName: '$(azureCR)/$(repo):latest'
+
+- stage: smoketestEndpoint
+  displayName: smoketestEndpoint
+  jobs:
+  - job: myJob
+    pool:
+      vmImage: $(vm)
+    steps:
+    - task: CmdLine@2
+      inputs:
+        script: 'curl "https://hellworldfunc.azurewebsites.net/api/MyHttpTrigger?code=3Tvmwo0D3bScNp1fQYA8RM8JNDF4AaXOTLHvd6rOH77jSFk/aM6L8A==&name=zaniar"'
