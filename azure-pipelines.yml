@@ -128,3 +128,14 @@ stages:
               resourceGroupName: $(rg)
               slotName: nearlyprod
               imageName: '$(azureCR)/$(repo):latest'
+
+- stage: smoketestEndpoint
+  displayName: smoketestEndpoint
+  jobs:
+  - job: myJob
+    pool:
+      vmImage: $(vm)
+    steps:
+    - task: CmdLine@2
+      inputs:
+        script: 'curl "https://hellworldfunc.azurewebsites.net/api/MyHttpTrigger?code=3Tvmwo0D3bScNp1fQYA8RM8JNDF4AaXOTLHvd6rOH77jSFk/aM6L8A==&name=zaniar"'
