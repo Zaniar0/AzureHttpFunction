@@ -107,7 +107,7 @@ stages:
               imageName: '$(azureCR)/$(repo):latest'
 
 - stage: DeployNearlyProd
-  displayName: Deploy to UAT slot
+  displayName: Deploy to nearlyprod slot
   dependsOn: DeployUAT
   jobs:
   - deployment: DeployAzureFunction
